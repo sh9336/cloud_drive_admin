@@ -332,9 +332,56 @@ export default function TenantDetailsPage({ params }) {
 
     if (loading) {
         return (
-            <div className="h-96 flex flex-col items-center justify-center">
-                <LoadingSpinner className="w-8 h-8 mb-4" />
-                <p className="text-sm text-zinc-500">Loading tenant details...</p>
+            <div className="space-y-8 animate-pulse">
+                {/* Header Skeleton */}
+                <div className="flex items-start justify-between gap-6">
+                    <div className="flex items-start gap-4 flex-1">
+                        <div className="w-9 h-9 rounded-md bg-zinc-200 dark:bg-zinc-800" />
+                        <div className="flex-1 space-y-3">
+                            <div className="h-8 w-64 bg-zinc-200 dark:bg-zinc-800 rounded-md" />
+                            <div className="h-4 w-48 bg-zinc-200 dark:bg-zinc-800 rounded-md" />
+                        </div>
+                    </div>
+                    <div className="flex gap-2">
+                        <div className="h-8 w-32 bg-zinc-200 dark:bg-zinc-800 rounded-md" />
+                        <div className="h-8 w-24 bg-zinc-200 dark:bg-zinc-800 rounded-md" />
+                        <div className="h-8 w-20 bg-zinc-200 dark:bg-zinc-800 rounded-md" />
+                    </div>
+                </div>
+
+                {/* Stats Cards Skeleton */}
+                <div className="grid gap-4 md:grid-cols-3">
+                    {[1, 2, 3].map(i => (
+                        <Card key={i} className="border-zinc-200/50 dark:border-zinc-800/50">
+                            <CardHeader className="pb-3">
+                                <div className="h-4 w-24 bg-zinc-200 dark:bg-zinc-800 rounded-md" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="h-8 w-20 bg-zinc-200 dark:bg-zinc-800 rounded-md mb-3" />
+                                <div className="h-3 w-32 bg-zinc-200 dark:bg-zinc-800 rounded-md" />
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+
+                {/* Table Skeleton */}
+                <Card className="border-zinc-200/50 dark:border-zinc-800/50">
+                    <CardHeader className="pb-4 border-b border-zinc-200/50 dark:border-zinc-800/50">
+                        <div className="h-6 w-32 bg-zinc-200 dark:bg-zinc-800 rounded-md mb-2" />
+                        <div className="h-3 w-48 bg-zinc-200 dark:bg-zinc-800 rounded-md" />
+                    </CardHeader>
+                    <CardContent className="p-0">
+                        <div className="p-4 space-y-4">
+                            {[1, 2, 3].map(i => (
+                                <div key={i} className="flex justify-between">
+                                    <div className="h-5 w-48 bg-zinc-200 dark:bg-zinc-800 rounded-md" />
+                                    <div className="h-5 w-24 bg-zinc-200 dark:bg-zinc-800 rounded-md" />
+                                    <div className="h-5 w-32 bg-zinc-200 dark:bg-zinc-800 rounded-md" />
+                                </div>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
         );
     }

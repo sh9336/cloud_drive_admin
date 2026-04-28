@@ -8,8 +8,10 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Badge } from '@/components/ui/Badge';
-import { Modal } from '@/components/ui/Modal';
+import dynamic from 'next/dynamic';
+const Modal = dynamic(() => import('@/components/ui/Modal').then(mod => mod.Modal), { ssr: false });
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { useToast } from '@/components/ui/Toast';
 import { formatDate } from '@/lib/utils';
 import {
     RotateCcw,
@@ -29,6 +31,7 @@ import {
 } from 'lucide-react';
 
 export default function AuditLogsPage() {
+    const { toast } = useToast();
     const [logs, setLogs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [expandedRows, setExpandedRows] = useState(new Set());
@@ -72,6 +75,20 @@ export default function AuditLogsPage() {
             }));
         } catch (err) {
             console.error('Failed to fetch logs:', err);
+            if (err.response?.status === 429) {
+                toast({
+                    variant: "destructive",
+                    title: "Rate Limit Exceeded",
+                    description: "You are making too many requests. Please slow down and try again."
+                });
+            } else {
+                toast({
+                    variant: "destructive",
+                    title: "Error fetching logs",
+                    description: err.response?.data?.error || "An unexpected error occurred."
+                });
+            }
+            setLogs([]);
         } finally {
             setLoading(false);
         }
@@ -175,7 +192,7 @@ export default function AuditLogsPage() {
                         <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 flex items-center gap-1.5 ml-1">
                             <User className="w-3 h-3" /> Actor Type
                         </label>
-                        <Select name="actor_type" value={filters.actor_type} onChange={handleFilterChange}>
+                        <Select name="actor_type" value={filters.actor_type} onChange={handleFilterChange} suppressHydrationWarning>
                             <option value="">All Actors</option>
                             <option value="admin">Admin</option>
                             <option value="system">System</option>
@@ -192,13 +209,14 @@ export default function AuditLogsPage() {
                             value={filters.actor_email}
                             onChange={handleFilterChange}
                             className="h-8"
+                            suppressHydrationWarning
                         />
                     </div>
                     <div className="space-y-1.5">
                         <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 flex items-center gap-1.5 ml-1">
                             <Shield className="w-3 h-3" /> Status
                         </label>
-                        <Select name="status" value={filters.status} onChange={handleFilterChange}>
+                        <Select name="status" value={filters.status} onChange={handleFilterChange} suppressHydrationWarning>
                             <option value="">All Status</option>
                             <option value="success">Success</option>
                             <option value="failure">Failure</option>
@@ -214,6 +232,7 @@ export default function AuditLogsPage() {
                             value={filters.action}
                             onChange={handleFilterChange}
                             className="h-8"
+                            suppressHydrationWarning
                         />
                     </div>
                     <div className="space-y-1.5">
@@ -226,6 +245,7 @@ export default function AuditLogsPage() {
                             value={filters.start_date}
                             onChange={handleFilterChange}
                             className="h-8"
+                            suppressHydrationWarning
                         />
                     </div>
                     <div className="space-y-1.5">
@@ -238,6 +258,7 @@ export default function AuditLogsPage() {
                             value={filters.end_date}
                             onChange={handleFilterChange}
                             className="h-8"
+                            suppressHydrationWarning
                         />
                     </div>
                     <div className="flex items-center gap-2">
@@ -253,7 +274,7 @@ export default function AuditLogsPage() {
                             <TableRow className="bg-zinc-100/30 dark:bg-zinc-900/30 border-b border-zinc-200/50 dark:border-zinc-800/50">
                                 <TableHead className="w-[40px]"></TableHead>
                                 <TableHead className="w-[180px] font-bold text-xs">Timestamp</TableHead>
-                                <TableHead className="w-[200px] font-bold text-xs">Actor</TableHead>
+                                <TableHead className="min-w-[280px] font-bold text-xs">Actor</TableHead>
                                 <TableHead className="font-bold text-xs text-center w-[120px]">Resource</TableHead>
                                 <TableHead className="font-bold text-xs">Action</TableHead>
                                 <TableHead className="w-[100px] font-bold text-xs">Status</TableHead>
@@ -262,14 +283,34 @@ export default function AuditLogsPage() {
                         </TableHeader>
                         <TableBody>
                             {loading ? (
-                                <TableRow>
-                                    <TableCell colSpan={7} className="h-64 text-center">
-                                        <div className="flex flex-col items-center justify-center gap-3">
-                                            <LoadingSpinner className="w-8 h-8 text-indigo-500" />
-                                            <span className="text-xs text-zinc-500 font-medium">Loading audit logs...</span>
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
+                                Array.from({ length: 10 }).map((_, index) => (
+                                    <TableRow key={`skeleton-${index}`} className="animate-pulse border-b border-zinc-200/50 dark:border-zinc-800/50">
+                                        <TableCell className="text-center">
+                                            <div className="w-3.5 h-3.5 bg-zinc-200 dark:bg-zinc-800 rounded mx-auto" />
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className="h-4 w-32 bg-zinc-200 dark:bg-zinc-800 rounded-md" />
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className="space-y-2">
+                                                <div className="h-3 w-40 bg-zinc-200 dark:bg-zinc-800 rounded-md" />
+                                                <div className="h-2 w-24 bg-zinc-200 dark:bg-zinc-800 rounded-md" />
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="text-center">
+                                            <div className="h-4 w-16 bg-zinc-200 dark:bg-zinc-800 rounded-md mx-auto" />
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className="h-5 w-24 bg-zinc-200 dark:bg-zinc-800 rounded-md" />
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className="h-5 w-16 bg-zinc-200 dark:bg-zinc-800 rounded-full" />
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className="h-4 w-24 bg-zinc-200 dark:bg-zinc-800 rounded-md" />
+                                        </TableCell>
+                                    </TableRow>
+                                ))
                             ) : logs.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={7} className="h-64 text-center">
@@ -294,16 +335,16 @@ export default function AuditLogsPage() {
                                                 {formatDate(log.created_at)}
                                             </TableCell>
                                             <TableCell>
-                                                <div className="flex flex-col">
-                                                    <div className="flex items-center gap-1.5">
+                                                <div className="flex flex-col gap-0.5">
+                                                    <div className="flex items-center gap-1.5 flex-wrap">
                                                         <span className="font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-tight text-[10px]">{log.actor_type}</span>
                                                         <span className="text-zinc-400">•</span>
-                                                        <span className="font-medium text-zinc-600 dark:text-zinc-400 truncate max-w-[120px]" title={log.actor_email}>
+                                                        <span className="font-medium text-zinc-600 dark:text-zinc-400 break-all">
                                                             {log.actor_email || 'N/A'}
                                                         </span>
                                                     </div>
-                                                    <span className="text-[9px] text-zinc-400 font-mono truncate max-w-[160px]" title={log.actor_id}>
-                                                        ID: {log.actor_id}
+                                                    <span className="text-[10px] text-zinc-400 font-mono break-all">
+                                                        {log.actor_id}
                                                     </span>
                                                 </div>
                                             </TableCell>
@@ -351,13 +392,13 @@ export default function AuditLogsPage() {
                                                             <div className="grid grid-cols-2 gap-2">
                                                                 <div className="bg-white dark:bg-zinc-950 rounded-lg border border-zinc-200/50 dark:border-zinc-800/50 p-2.5">
                                                                     <p className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider mb-1">User Agent</p>
-                                                                    <p className="text-[10px] text-zinc-600 dark:text-zinc-400 truncate" title={log.user_agent}>
+                                                                    <p className="text-[10px] text-zinc-600 dark:text-zinc-400 line-clamp-3 break-all" title={log.user_agent}>
                                                                         {log.user_agent || 'N/A'}
                                                                     </p>
                                                                 </div>
                                                                 <div className="bg-white dark:bg-zinc-950 rounded-lg border border-zinc-200/50 dark:border-zinc-800/50 p-2.5">
                                                                     <p className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider mb-1">Resource ID</p>
-                                                                    <p className="text-[10px] text-zinc-600 dark:text-zinc-400 font-mono">
+                                                                    <p className="text-[10px] text-zinc-600 dark:text-zinc-400 font-mono break-all">
                                                                         {log.resource_id || 'N/A'}
                                                                     </p>
                                                                 </div>
@@ -445,6 +486,7 @@ export default function AuditLogsPage() {
                                     onChange={(e) => setRotateDays(parseInt(e.target.value) || 0)}
                                     min="1"
                                     className="w-20 h-8 font-bold text-center"
+                                    suppressHydrationWarning
                                 />
                                 <span className="text-xs font-medium text-zinc-600 dark:text-zinc-300">Days of logs to keep</span>
                             </div>

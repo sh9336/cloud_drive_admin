@@ -1,10 +1,10 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+const API_BASE = '/api-proxy';
 
 export const ENDPOINTS = {
     AUTH: {
-        LOGIN: `${API_BASE}/auth/admin/login`,
-        REFRESH: `${API_BASE}/auth/refresh`,
-        LOGOUT: `${API_BASE}/auth/logout`,
+        LOGIN: '/api/auth/login',
+        REFRESH: '/api/auth/refresh',
+        LOGOUT: '/api/auth/logout',
         CHANGE_PASSWORD: `${API_BASE}/admin/change_password`,
     },
     TENANTS: {

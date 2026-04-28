@@ -55,7 +55,31 @@ export default function DashboardPage() {
     }, []);
 
     if (loading) {
-        return <div className="h-96 flex items-center justify-center"><LoadingSpinner className="w-8 h-8" /></div>;
+        return (
+            <div className="space-y-6 animate-pulse">
+                <div>
+                    <div className="h-8 w-48 bg-zinc-200 dark:bg-zinc-800 rounded-md" />
+                    <div className="h-4 w-64 bg-zinc-200 dark:bg-zinc-800 rounded-md mt-2" />
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    {[1, 2, 3, 4].map(i => (
+                        <Card key={i} className="border-zinc-200/50 dark:border-zinc-800/50">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <div className="h-4 w-24 bg-zinc-200 dark:bg-zinc-800 rounded-md" />
+                                <div className="h-4 w-4 bg-zinc-200 dark:bg-zinc-800 rounded-md" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="h-8 w-16 bg-zinc-200 dark:bg-zinc-800 rounded-md mb-2" />
+                                <div className="h-3 w-32 bg-zinc-200 dark:bg-zinc-800 rounded-md" />
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+
+                <div className="h-40 w-full bg-zinc-50 dark:bg-zinc-900 border-dashed border-2 border-zinc-200 dark:border-zinc-800 rounded-lg" />
+            </div>
+        );
     }
 
     return (

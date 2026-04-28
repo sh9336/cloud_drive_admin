@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/Table';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { Modal } from '@/components/ui/Modal';
+import dynamic from 'next/dynamic';
+const Modal = dynamic(() => import('@/components/ui/Modal').then(mod => mod.Modal), { ssr: false });
 import { Plus, Check, X, Ban, Activity, Trash2, ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
 import { formatDate, formatBytes } from '@/lib/utils';
@@ -71,7 +71,38 @@ export default function SyncTokensPage() {
     };
 
     if (loading) {
-        return <div className="h-96 flex items-center justify-center"><LoadingSpinner className="w-8 h-8" /></div>;
+        return (
+            <div className="space-y-6 animate-pulse">
+                <div className="flex items-center justify-between">
+                    <div className="space-y-2">
+                        <div className="h-8 w-48 bg-zinc-200 dark:bg-zinc-800 rounded-md" />
+                        <div className="h-4 w-64 bg-zinc-200 dark:bg-zinc-800 rounded-md" />
+                    </div>
+                    <div className="flex gap-2">
+                        <div className="h-8 w-32 bg-zinc-200 dark:bg-zinc-800 rounded-md" />
+                        <div className="h-8 w-24 bg-zinc-200 dark:bg-zinc-800 rounded-md" />
+                    </div>
+                </div>
+
+                <Card className="border-zinc-200/50 dark:border-zinc-800/50">
+                    <CardContent className="p-0">
+                        <div className="p-4 space-y-4">
+                            {Array.from({ length: 8 }).map((_, i) => (
+                                <div key={i} className="flex justify-between items-center py-2 border-b border-zinc-100 dark:border-zinc-800/50 last:border-0">
+                                    <div className="space-y-2">
+                                        <div className="h-4 w-40 bg-zinc-200 dark:bg-zinc-800 rounded-md" />
+                                        <div className="h-3 w-32 bg-zinc-200 dark:bg-zinc-800 rounded-md" />
+                                    </div>
+                                    <div className="h-4 w-24 bg-zinc-200 dark:bg-zinc-800 rounded-md" />
+                                    <div className="h-6 w-20 bg-zinc-200 dark:bg-zinc-800 rounded-full" />
+                                    <div className="h-8 w-32 bg-zinc-200 dark:bg-zinc-800 rounded-md" />
+                                </div>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+        );
     }
 
     return (
@@ -167,22 +198,22 @@ export default function SyncTokensPage() {
                 <CardContent className="p-0">
                     <Table>
                         <TableHeader>
-                            <TableRow>
-                                <TableHead>Token Name</TableHead>
-                                <TableHead>Tenant</TableHead>
-                                <TableHead>Permissions</TableHead>
-                                <TableHead>Usage (Up/Down)</TableHead>
-                                <TableHead>Expires</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
+                            <TableRow className="bg-zinc-50/50 dark:bg-zinc-900/30">
+                                <TableHead className="w-[200px] font-bold text-xs">Token Name</TableHead>
+                                <TableHead className="w-[200px] font-bold text-xs">Tenant</TableHead>
+                                <TableHead className="w-[120px] font-bold text-xs">Permissions</TableHead>
+                                <TableHead className="w-[150px] font-bold text-xs">Usage (Up/Down)</TableHead>
+                                <TableHead className="w-[180px] font-bold text-xs">Expires</TableHead>
+                                <TableHead className="w-[100px] font-bold text-xs">Status</TableHead>
+                                <TableHead className="text-right font-bold text-xs">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {tokens.map((token) => (
                                 <TableRow key={token.id}>
                                     <TableCell>
-                                        <div className="font-medium">{token.name}</div>
-                                        <div className="text-xs text-zinc-400 font-mono truncate max-w-[150px]">
+                                        <div className="font-medium text-sm text-zinc-900 dark:text-zinc-100">{token.name}</div>
+                                        <div className="text-[10px] text-zinc-400 font-mono break-all mt-1">
                                             {token.id}
                                         </div>
                                     </TableCell>

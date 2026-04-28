@@ -7,23 +7,16 @@ export const authService = {
         return data;
     },
 
-    logout: async (refreshToken) => {
+    logout: async () => {
         try {
-            if (refreshToken) {
-                await apiClient.post(ENDPOINTS.AUTH.LOGOUT, { refresh_token: refreshToken });
-            }
-        } finally {
-            // Always cleanup local storage even if API fails
-            if (typeof window !== 'undefined') {
-                localStorage.removeItem('access_token');
-                localStorage.removeItem('refresh_token');
-                localStorage.removeItem('user');
-            }
+            await apiClient.post(ENDPOINTS.AUTH.LOGOUT);
+        } catch (error) {
+            console.error('Logout failed:', error);
         }
     },
 
-    refresh: async (refreshToken) => {
-        const { data } = await apiClient.post(ENDPOINTS.AUTH.REFRESH, { refresh_token: refreshToken });
+    refresh: async () => {
+        const { data } = await apiClient.post(ENDPOINTS.AUTH.REFRESH);
         return data;
     },
 

@@ -11,7 +11,8 @@ import { Plus, Trash2, ShieldAlert, CheckCircle2, Copy, Check, AlertCircle, Exte
 import Link from 'next/link';
 import { formatDate } from '@/lib/utils';
 import { useAuth } from '@/store/authContext';
-import { Modal } from '@/components/ui/Modal';
+import dynamic from 'next/dynamic';
+const Modal = dynamic(() => import('@/components/ui/Modal').then(mod => mod.Modal), { ssr: false });
 import { useToast } from '@/components/ui/Toast';
 import { Input } from '@/components/ui/Input';
 
